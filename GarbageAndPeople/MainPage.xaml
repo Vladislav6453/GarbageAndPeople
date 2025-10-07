@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GarbageAndPeople.MainPage"
+             xmlns:vm="clr-namespace:GarbageAndPeople.VM"
+             BindingContext="{DynamicResource vm}">
+    <ContentPage.Resources>
+        <vm:MainPageVM x:Key="vm"/>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <ListView ItemsSource="{Binding Owners}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding FirstName}"/>
+                                    <Label Text="{Binding LastName}"/>
+                                    <Label Text="{Binding PhoneNumber}"/>
+                                    <Label Text="{Binding Email}"/>
+                                </HorizontalStackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+            <IndicatorView></IndicatorView>
+            <CarouselView ItemsSource="{Binding Owners}"/>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
