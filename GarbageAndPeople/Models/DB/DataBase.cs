@@ -5,6 +5,8 @@ namespace ХламИЛюди.Models.DB
 {
     public class Database
     {
+        private int incrementOwner;
+        private int incrementThing;
         public Database() 
         {
             StartDb();
@@ -15,14 +17,25 @@ namespace ХламИЛюди.Models.DB
         public async void StartDb()
         {
             owners = await VerniMneSpisokOwner();
+                   
             things = await GetThingsAsync();
+            
+
+            AddOwner(new Owner() { FirstName = "asdasd", LastName = "sdfsd", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
+            AddOwner(new Owner() { FirstName = "vbnmvbn", LastName = "xcbv", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
+
         }
         public async Task<List<Owner>> VerniMneSpisokOwner()
         {
             try
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "owners.json"), FileMode.Open))
-                    return await JsonSerializer.DeserializeAsync<List<Owner>>(fs);
+                {
+                    List<Owner> list = JsonSerializer.Deserialize<List<Owner>>(fs);
+                    incrementOwner = owners.MaxBy(x => x.Id).Id;
+                    return list;
+                }
+                    
             }
             catch { 
                 return new List<Owner>();
@@ -45,13 +58,20 @@ namespace ХламИЛюди.Models.DB
             try
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.Open))
-                    return await JsonSerializer.DeserializeAsync<List<Thing>>(fs);
+                {
+                    List<Thing> things = JsonSerializer.Deserialize<List<Thing>>(fs);
+                    incrementThing = things.MaxBy(x => x.Id).Id;
+                    return things;
+                }
+                    
             }
             catch
             {
                 return new List<Thing>();
             }
         }
+        public async Task<List<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
+            => (await GetThingsAsync()).Where(obj => obj.OwnerId == ownerId).ToList();
         public async Task<bool> SaveThingsAsync()
         {
             try
@@ -77,8 +97,16 @@ namespace ХламИЛюди.Models.DB
         {
             if (owner.Id == 0)
             {
-                owner.Id = owners.MaxBy(x => x.Id).Id + 1;
+                owner.Id = ++incrementOwner;
                 owners.Add(owner);
+            }
+            else
+            {
+                var ownerToChange = owners.First(x => x.Id == owner.Id);
+                ownerToChange.FirstName = owner.FirstName;
+                ownerToChange.LastName = owner.LastName;
+                ownerToChange.PhoneNumber = owner.PhoneNumber;
+                ownerToChange.Email = owner.Email;
             }
             await SaveOwnersAsync();
         }
@@ -86,8 +114,15 @@ namespace ХламИЛюди.Models.DB
         {
             if (thing.Id == 0)
             {
-                thing.Id = things.MaxBy(x => x.Id).Id + 1;
+                thing.Id = ++incrementThing;
                 things.Add(thing);
+            }
+            else
+            {
+                var thingToChange = things.First(x => x.Id == thing.Id);
+                thingToChange.Title = thing.Title;
+                thingToChange.Description = thing.Description;
+                thingToChange.OwnerId = thing.OwnerId;
             }
             await SaveThingsAsync();
         }

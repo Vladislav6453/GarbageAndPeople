@@ -12,25 +12,46 @@
             Padding="30,0"
             Spacing="25">
 
-            <ListView ItemsSource="{Binding Owners}">
+            <CarouselView CurrentItem="{Binding CurrentOwner}" Loop="True" IndicatorView="indicator" ItemsSource="{Binding Owners}">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Border>
+                            <VerticalStackLayout>
+                                <VerticalStackLayout.Resources>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Margin" Value="5"/>
+                                    </Style>
+                                </VerticalStackLayout.Resources>
+                                <Label Text="{Binding FirstName}"/>
+                                <Label Text="{Binding LastName}"/>
+                                <Label Text="{Binding PhoneNumber}"/>
+                                <Label Text="{Binding Email}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            <IndicatorView x:Name="indicator" HorizontalOptions="Center"/>
+
+            <ListView ItemsSource="{Binding OwnersThings}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <ViewCell.View>
                                 <HorizontalStackLayout>
-                                    <Label Text="{Binding FirstName}"/>
-                                    <Label Text="{Binding LastName}"/>
-                                    <Label Text="{Binding PhoneNumber}"/>
-                                    <Label Text="{Binding Email}"/>
+                                    <HorizontalStackLayout.Resources>
+                                        <Style TargetType="Label">
+                                            <Setter Property="Margin" Value="5"/>
+                                        </Style>
+                                    </HorizontalStackLayout.Resources>
+                                    <Label Text="{Binding Title}"/>
+                                    <Label Text="{Binding Description}"/>
                                 </HorizontalStackLayout>
                             </ViewCell.View>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            
-            <IndicatorView></IndicatorView>
-            <CarouselView ItemsSource="{Binding Owners}"/>
 
 
         </VerticalStackLayout>
