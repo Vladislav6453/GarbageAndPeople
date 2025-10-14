@@ -1,5 +1,4 @@
-﻿using ХламИЛюди.Classes;
-using ХламИЛюди.Models.DB;
+﻿using GarbageAndPeople.VM;
 
 namespace GarbageAndPeople
 {
@@ -9,6 +8,9 @@ namespace GarbageAndPeople
         public MainPage()
         {
             InitializeComponent();
+            var page = new MainPageVM();
+            page.Set(this);
+            BindingContext = page;
         }
     }
 }

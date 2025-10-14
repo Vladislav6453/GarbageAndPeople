@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ХламИЛюди.Classes
+﻿namespace GarbageAndPeople.Models
 {
     public class Owner
     {
@@ -13,6 +7,10 @@ namespace ХламИЛюди.Classes
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+
+        public string FL => $"{FirstName} {LastName}";
+
+        public List<Thing> Things { get; set; } = new List<Thing>();
 
     }
 }

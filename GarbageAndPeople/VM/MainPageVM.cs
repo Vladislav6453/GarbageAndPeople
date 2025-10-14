@@ -1,17 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ХламИЛюди.Classes;
-using ХламИЛюди.Models.DB;
+﻿using GarbageAndPeople.Models;
+using GarbageAndPeople.Models.DB;
+using GarbageAndPeople.VM.VMTools;
 
 namespace GarbageAndPeople.VM
 {
-    internal class MainPageVM
+    internal class MainPageVM : BaseVM
     {
-        public List<Owner> Owners { get; set; }
-        public List<Thing> Things { get; set; }
+        public List<Owner> Owners
+        {
+            get => owners;
+            set
+            {
+                owners = value;
+                Signal();
+            }
+        }
+        public List<Thing> Things
+        {
+            get => things;
+            set
+            {
+                things = value;
+                Signal();
+            }
+        }
 
         public Owner CurrentOwner
         {
@@ -20,39 +32,59 @@ namespace GarbageAndPeople.VM
             {
                 currentOwner = value;
                 if (value != null && value.Id != 0)
+                {
                     ChangeOwnersThingsList(value.Id);
+                    Signal();
+                }
             }
         }
 
-        public List<Thing> OwnersThings { get; set; }
+        public List<Thing> OwnersThings
+        {
+            get => ownersThings;
+            set
+            {
+                ownersThings = value;
+                Signal();
+            }
+        }
 
         private Database db = new();
         private Owner currentOwner;
-
+        private List<Owner> owners;
+        private List<Thing> things;
+        private List<Thing> ownersThings;
+             
         public MainPageVM() 
         {
+            OpenRedactorThing = new CommandVM(async () =>
+            {
+                await page.Navigation.PushAsync();
+            }, () => true);
+
+
+
             LoadLists();
         }
+
+        public CommandVM OpenRedactorThing { get; set; }
+
         public async void LoadLists()
-        {
-            //
-            
-            Owners = db.VerniMneSpisokOwner().Result;
-            //db.AddThing(new Thing() { Title="мусор", Description="Куча мусора. 2 кг" });
-            //db.AddThing(new Thing() { Title = "мусор", Description = "Большая куча мусора. 6 кг" });
-            Things = db.GetThingsAsync().Result;
-            var thing1 = Things.First();
-            var thing2 = Things.Last();
-            thing1.OwnerId = Owners.First().Id;
-            thing1.Id = 1;
-            thing2.OwnerId = Owners.Last().Id;
-            thing2.Id = 2;
-            db.AddThing(thing1);
-            db.AddThing(thing2);
-            Things = db.GetThingsAsync().Result;
+        {            
+            Owners = await db.VerniMneSpisokOwner();
+            Things = await db.GetThingsAsync();
         }
+
+        
+
 
         public async void ChangeOwnersThingsList(int ownerId) =>
             OwnersThings = await db.GetThingsByOwnerIdAsync(ownerId);
+
+        public ContentPage page;
+        public void Set(ContentPage page)
+        {
+            this.page = page;
+        }
     }
 }

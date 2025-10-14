@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
-using ХламИЛюди.Classes;
 
-namespace ХламИЛюди.Models.DB
+namespace GarbageAndPeople.Models.DB
 {
     public class Database
     {
@@ -16,37 +15,56 @@ namespace ХламИЛюди.Models.DB
 
         public async void StartDb()
         {
-            owners = await VerniMneSpisokOwner();
-                   
-            things = await GetThingsAsync();
-            
-
-            AddOwner(new Owner() { FirstName = "asdasd", LastName = "sdfsd", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
-            AddOwner(new Owner() { FirstName = "vbnmvbn", LastName = "xcbv", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
-
-        }
-        public async Task<List<Owner>> VerniMneSpisokOwner()
-        {
             try
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "owners.json"), FileMode.Open))
                 {
-                    List<Owner> list = JsonSerializer.Deserialize<List<Owner>>(fs);
+                    owners = JsonSerializer.Deserialize<List<Owner>>(fs);
                     incrementOwner = owners.MaxBy(x => x.Id).Id;
-                    return list;
                 }
-                    
             }
-            catch { 
-                return new List<Owner>();
-            }        
+            catch
+            {
+                owners = new();
+            }
+
+            try
+            {
+                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.Open))
+                {
+                    things = JsonSerializer.Deserialize<List<Thing>>(fs);
+                    incrementThing = things.MaxBy(x => x.Id).Id;
+                }
+
+            }
+            catch
+            {
+                things = new List<Thing>();
+            }
+
+            for (int i = 0; i < things.Count; i++)
+            {
+                var owner = owners.FirstOrDefault(o => o.Id == things[i].OwnerId);
+                things[i].Owner = owner;
+                owner?.Things.Add(things[i]);
+            }
+
+
+            //AddOwner(new Owner() { FirstName = "asdasd", LastName = "sdfsd", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
+            //AddOwner(new Owner() { FirstName = "vbnmvbn", LastName = "xcbv", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
+
+        }
+        public async Task<List<Owner>> VerniMneSpisokOwner()
+        {
+            await Task.Delay(300);
+            return owners;
         }
         public async Task<bool> SaveOwnersAsync()
         {
             try
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "owners.json"), FileMode.OpenOrCreate))
-                    await JsonSerializer.SerializeAsync<List<Owner>>(fs, owners);
+                    await JsonSerializer.SerializeAsync(fs, owners);
             }
             catch {
                 return false;
@@ -55,29 +73,17 @@ namespace ХламИЛюди.Models.DB
         }
         public async Task<List<Thing>> GetThingsAsync()
         {
-            try
-            {
-                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.Open))
-                {
-                    List<Thing> things = JsonSerializer.Deserialize<List<Thing>>(fs);
-                    incrementThing = things.MaxBy(x => x.Id).Id;
-                    return things;
-                }
-                    
-            }
-            catch
-            {
-                return new List<Thing>();
-            }
+            await Task.Delay(300);
+            return things;
         }
         public async Task<List<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
-            => (await GetThingsAsync()).Where(obj => obj.OwnerId == ownerId).ToList();
+            => (await GetThingsAsync()).Where(t => t.OwnerId == ownerId).ToList();
         public async Task<bool> SaveThingsAsync()
         {
             try
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.OpenOrCreate))
-                    await JsonSerializer.SerializeAsync<List<Thing>>(fs, things);
+                    await JsonSerializer.SerializeAsync(fs, things);
             }
             catch
             {
