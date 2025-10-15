@@ -1,5 +1,6 @@
 ﻿using GarbageAndPeople.Models;
 using GarbageAndPeople.Models.DB;
+using GarbageAndPeople.View;
 using GarbageAndPeople.VM.VMTools;
 
 namespace GarbageAndPeople.VM
@@ -59,7 +60,11 @@ namespace GarbageAndPeople.VM
         {
             OpenRedactorThing = new CommandVM(async () =>
             {
-                await page.Navigation.PushAsync();
+                await page.Navigation.PushAsync(new EditThing(new Thing(), db));
+            }, () => true);
+            OpenRedactorOwner = new CommandVM(async () =>
+            {
+                await page.Navigation.PushAsync(new EditOwner(new Owner(), db));
             }, () => true);
 
 
@@ -68,6 +73,7 @@ namespace GarbageAndPeople.VM
         }
 
         public CommandVM OpenRedactorThing { get; set; }
+        public CommandVM OpenRedactorOwner { get; set; }
 
         public async void LoadLists()
         {            

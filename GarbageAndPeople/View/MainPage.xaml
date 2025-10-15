@@ -52,6 +52,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <Button Text="Добавить новую вещь" Command="{Binding OpenRedactorThing}"/>
+            <Button Text="Добавить нового владельца" Command="{Binding OpenRedactorOwner}"/>
 
 
         </VerticalStackLayout>

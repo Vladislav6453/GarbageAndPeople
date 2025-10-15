@@ -85,7 +85,7 @@ namespace GarbageAndPeople.Models.DB
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.OpenOrCreate))
                     await JsonSerializer.SerializeAsync(fs, things);
             }
-            catch
+            catch(Exception e)
             {
                 return false;
             }

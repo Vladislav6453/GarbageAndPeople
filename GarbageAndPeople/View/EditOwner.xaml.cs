@@ -4,14 +4,13 @@ using GarbageAndPeople.VM;
 
 namespace GarbageAndPeople.View;
 
-public partial class EditThing : ContentPage
+public partial class EditOwner : ContentPage
 {
-	public EditThing(Thing thing, Database db)
+	public EditOwner(Owner owner, Database db)
 	{
 		InitializeComponent();
-		var vm = new EditThingVM();
-
-        vm.Set(thing, db, this);
+		var vm = new EditOwnerVM();
+		vm.Set(owner, db, this);
 		BindingContext = vm;
 	}
 }

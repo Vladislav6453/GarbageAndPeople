@@ -7,8 +7,8 @@ namespace GarbageAndPeople.VM
 {
     public class EditThingVM : BaseVM
     {
-        private Thing thing;
-        public Thing Thing
+        private Thing? thing;
+        public Thing? Thing
         {
             get => thing;
             set
@@ -18,12 +18,31 @@ namespace GarbageAndPeople.VM
             }
         }
         private Database db;
+        private ContentPage page;
+        private List<Owner> owners;
 
+        public List<Owner> Owners
+        {
+            get => owners;
+            set
+            {
+                owners = value;
+                Signal();
+            }
+        }
 
-        public List<Owner> Owners { get; set; }
+        public CommandVM Redacting { get; set; }
         public EditThingVM() 
         {
-            LoadLists();
+            Redacting = new CommandVM(async () =>
+            {
+                Thing.Title = Thing.Title.Trim();
+                Thing.OwnerId = Thing.Owner?.Id;
+                await db.AddThing(Thing);
+                await db.SaveThingsAsync();
+                await page.Navigation.PopAsync();
+            }, () => !string.IsNullOrEmpty(Thing?.Title.Trim()));
+
         }
 
         public async void LoadLists()
@@ -32,10 +51,12 @@ namespace GarbageAndPeople.VM
             Thing.Owner = Owners.FirstOrDefault(o => o.Id == Thing.OwnerId);
         }
 
-        public void Set(Thing thing, Database db)
+        public void Set(Thing thing, Database db, ContentPage page)
         {
             Thing = thing;
             this.db = db;
+            this.page = page;
+            LoadLists();
         }
     }
 }
