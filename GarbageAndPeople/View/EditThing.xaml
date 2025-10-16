@@ -10,9 +10,9 @@
     </ContentPage.Resources>
     <VerticalStackLayout>
         <Label Text="Название вещи:"/>
-        <Entry Text="{Binding Thing.Title}"/>
+        <Entry Text="{Binding Title}"/>
         <Label Text="Владелец"/>
-        <Picker  ItemsSource="{Binding Owners}" ItemDisplayBinding="{Binding FL}" SelectedItem="{Binding Thing.Owner}" Title="Выбри владельца" />
+        <Picker ItemsSource="{Binding Owners}" ItemDisplayBinding="{Binding FL}" SelectedItem="{Binding Thing.Owner}" Title="Выбри владельца" />
         <Editor Placeholder="Введите описание штуки..." Text="{Binding Thing.Description}"/>
         <Button Text="Создать" Command="{Binding Redacting}"/>
 

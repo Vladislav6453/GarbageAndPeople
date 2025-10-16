@@ -20,6 +20,7 @@ namespace GarbageAndPeople.VM
         private Database db;
         private ContentPage page;
         private List<Owner> owners;
+        private string title = string.Empty;
 
         public List<Owner> Owners
         {
@@ -31,15 +32,25 @@ namespace GarbageAndPeople.VM
             }
         }
 
-        public CommandVM Redacting { get; set; }
+        public Command Redacting { get; set; }
+        public string Title
+        {
+            get => title;
+            set
+            {
+                title = value;
+                Signal();
+                Redacting.ChangeCanExecute();
+            }
+        }
         public EditThingVM() 
         {
-            Redacting = new CommandVM(async () =>
+            Redacting = new Command(async () =>
             {
                 Thing.Title = Thing.Title.Trim();
                 Thing.OwnerId = Thing.Owner?.Id;
+                Thing.Description = Thing.Description.Trim();
                 await db.AddThing(Thing);
-                await db.SaveThingsAsync();
                 await page.Navigation.PopAsync();
             }, () => !string.IsNullOrEmpty(Thing?.Title.Trim()));
 

@@ -10,13 +10,13 @@
     </ContentPage.Resources>
     <VerticalStackLayout>
         <Label Text="Имя"/>
-        <Entry Text="{Binding Owner.FirstName}"/>
+        <Entry Text="{Binding FName}"/>
         <Label Text="Фамилия"/>
-        <Entry Text="{Binding Owner.LastName}"/>
+        <Entry Text="{Binding LName}"/>
         <Label Text="E-mail"/>
         <Entry Text="{Binding Owner.Email}"/>
         <Label Text="Номер телефона"/>
-        <Entry Text="{Binding Owner.PhoneNumber}"/>
+        <Entry Text="{Binding Phone}"/>
 
         <Button Text="Создать" Command="{Binding Redacting}"/>
     </VerticalStackLayout>

@@ -99,7 +99,7 @@ namespace GarbageAndPeople.Models.DB
         {
             return (await GetThingsAsync()).FirstOrDefault(thing => thing.Id == id);
         }
-        public async Task AddOwner(Owner owner)
+        public async Task ChangeOwner(Owner owner)
         {
             if (owner.Id == 0)
             {

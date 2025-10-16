@@ -33,7 +33,10 @@
             </CarouselView>
             <IndicatorView x:Name="indicator" HorizontalOptions="Center"/>
 
-            <ListView ItemsSource="{Binding OwnersThings}">
+            <ListView ItemsSource="{Binding OwnersThings}" SelectedItem="{Binding SelectedThing}">
+                <!--<ListView.Resources>
+                    <Style TargetType=""
+                </ListView.Resources>-->
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -48,12 +51,17 @@
                                     <Label Text="{Binding Description}"/>
                                 </HorizontalStackLayout>
                             </ViewCell.View>
+                            <ViewCell.ContextActions>
+                                <MenuItem  Text="Удалить" Command="{Binding RemoveThing, Source={DynamicResource vm}}" CommandParameter="{Binding .}"/>
+                                <MenuItem Text="Изменить" Command="{Binding RedactThing, Source={DynamicResource vm}}" CommandParameter="{Binding .}"/>
+                            </ViewCell.ContextActions>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Text="Добавить новую вещь" Command="{Binding OpenRedactorThing}"/>
-            <Button Text="Добавить нового владельца" Command="{Binding OpenRedactorOwner}"/>
+
+            <Button Text="Добавить новую вещь" Command="{Binding CreateThing}"/>
+            <Button Text="Добавить нового владельца" Command="{Binding CreateOwner}"/>
 
 
         </VerticalStackLayout>
