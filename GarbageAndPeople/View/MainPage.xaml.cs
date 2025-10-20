@@ -8,9 +8,7 @@ namespace GarbageAndPeople
         public MainPage()
         {
             InitializeComponent();
-            var page = new MainPageVM();
-            page.Set(this);
-            BindingContext = page;
+            ((MainPageVM)BindingContext).Set(this);
         }
     }
 }

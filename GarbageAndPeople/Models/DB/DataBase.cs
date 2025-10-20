@@ -32,12 +32,13 @@ namespace GarbageAndPeople.Models.DB
             {
                 using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.Open))
                 {
-                    things = JsonSerializer.Deserialize<List<Thing>>(fs);
+                    
+                    things = await JsonSerializer.DeserializeAsync<List<Thing>>(fs);
                     incrementThing = things.MaxBy(x => x.Id).Id;
                 }
 
             }
-            catch
+            catch(Exception e)
             {
                 things = new List<Thing>();
             }
@@ -82,8 +83,8 @@ namespace GarbageAndPeople.Models.DB
         {
             try
             {
-                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.OpenOrCreate))
-                    await JsonSerializer.SerializeAsync(fs, things);
+                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "things.json"), FileMode.Create))
+                    await JsonSerializer.SerializeAsync<List<Thing>>(fs, things);
             }
             catch(Exception e)
             {

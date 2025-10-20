@@ -47,12 +47,12 @@ namespace GarbageAndPeople.VM
         {
             Redacting = new Command(async () =>
             {
-                Thing.Title = Thing.Title.Trim();
-                Thing.OwnerId = Thing.Owner?.Id;
+                Thing.Title = Title.Trim();
+                Thing.OwnerId = Thing.Owner.Id;
                 Thing.Description = Thing.Description.Trim();
                 await db.AddThing(Thing);
                 await page.Navigation.PopAsync();
-            }, () => !string.IsNullOrEmpty(Thing?.Title.Trim()));
+            }, () => !string.IsNullOrEmpty(Title.Trim()));
 
         }
 
@@ -65,6 +65,7 @@ namespace GarbageAndPeople.VM
         public void Set(Thing thing, Database db, ContentPage page)
         {
             Thing = thing;
+            Title = thing.Title;
             this.db = db;
             this.page = page;
             LoadLists();

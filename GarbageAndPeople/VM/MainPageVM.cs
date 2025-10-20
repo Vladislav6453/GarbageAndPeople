@@ -94,20 +94,20 @@ namespace GarbageAndPeople.VM
             {
                 await db.RemoveThing(SelectedThing);
                 Things = await db.GetThingsAsync();
-            }, (thing) => true);
+            }, (thing) => thing != null);
 
             RedactThing = new Command<Thing>(async (thing) =>
             {
-                await page.Navigation.PushAsync(new EditThing(thing, db));
+                //await page.Navigation.PushAsync(new EditThing(thing, db));
                 OpenEditThing(thing);
                 //Things = await db.GetThingsAsync();
-            }, (thing) => true);
+            }, (thing) => thing != null);
 
 
             LoadLists();
         }
 
-        public async void LoadLists()
+        private async void LoadLists()
         {            
             Owners = await db.VerniMneSpisokOwner();
             Things = await db.GetThingsAsync();
@@ -117,7 +117,7 @@ namespace GarbageAndPeople.VM
             await page.Navigation.PushAsync(new EditThing(thing, db));
         }
 
-        public async void ChangeOwnersThingsList(int ownerId) =>
+        private async void ChangeOwnersThingsList(int ownerId) =>
             OwnersThings = await db.GetThingsByOwnerIdAsync(ownerId);
         public void Set(ContentPage page)
         {

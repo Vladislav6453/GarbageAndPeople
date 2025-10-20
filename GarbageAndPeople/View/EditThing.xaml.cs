@@ -9,9 +9,6 @@ public partial class EditThing : ContentPage
 	public EditThing(Thing thing, Database db)
 	{
 		InitializeComponent();
-		var vm = new EditThingVM();
-
-        vm.Set(thing, db, this);
-		BindingContext = vm;
-	}
+        ((EditThingVM)BindingContext).Set(thing, db, this);
+    }
 }

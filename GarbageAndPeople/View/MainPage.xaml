@@ -52,8 +52,8 @@
                                 </HorizontalStackLayout>
                             </ViewCell.View>
                             <ViewCell.ContextActions>
-                                <MenuItem  Text="Удалить" Command="{Binding RemoveThing, Source={DynamicResource vm}}" CommandParameter="{Binding .}"/>
-                                <MenuItem Text="Изменить" Command="{Binding RedactThing, Source={DynamicResource vm}}" CommandParameter="{Binding .}"/>
+                                <MenuItem  Text="Удалить" Command="{Binding RemoveThing, Source={StaticResource vm}}" CommandParameter="{Binding .}"/>
+                                <MenuItem Text="Изменить" Command="{Binding RedactThing, Source={StaticResource vm}}" CommandParameter="{Binding .}"/>
                             </ViewCell.ContextActions>
                         </ViewCell>
                     </DataTemplate>
