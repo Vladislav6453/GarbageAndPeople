@@ -19,10 +19,10 @@ namespace GarbageAndPeople.VM
         }
         private Database db;
         private ContentPage page;
-        private List<Owner> owners;
+        private IReadOnlyList<Owner> owners;
         private string title = string.Empty;
 
-        public List<Owner> Owners
+        public IReadOnlyList<Owner> Owners
         {
             get => owners;
             set
@@ -48,7 +48,8 @@ namespace GarbageAndPeople.VM
             Redacting = new Command(async () =>
             {
                 Thing.Title = Title.Trim();
-                Thing.OwnerId = Thing.Owner.Id;
+                if (Thing.Owner != null)
+                    Thing.OwnerId = Thing.Owner.Id;
                 Thing.Description = Thing.Description.Trim();
                 await db.AddThing(Thing);
                 await page.Navigation.PopAsync();

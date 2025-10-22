@@ -2,20 +2,21 @@
 using GarbageAndPeople.Models.DB;
 using GarbageAndPeople.View;
 using GarbageAndPeople.VM.VMTools;
+using System.Collections.ObjectModel;
 
 namespace GarbageAndPeople.VM
 {
     public class MainPageVM : BaseVM
     {
         private Database db = new();
-        private Owner currentOwner;
-        private List<Owner> owners;
-        private List<Thing> things;
-        private List<Thing> ownersThings;
+        private Owner? currentOwner;
+        private IReadOnlyCollection<Owner> owners;
+        private IReadOnlyCollection<Thing> things;
+        private IReadOnlyCollection<Thing> ownersThings;
         private ContentPage page;
-        private Thing selectedThing;
+        private Thing? selectedThing;
 
-        public List<Owner> Owners
+        public IReadOnlyCollection<Owner> Owners
         {
             get => owners;
             set
@@ -24,7 +25,7 @@ namespace GarbageAndPeople.VM
                 Signal();
             }
         }
-        public List<Thing> Things
+        public IReadOnlyCollection<Thing> Things
         {
             get => things;
             set
@@ -34,7 +35,7 @@ namespace GarbageAndPeople.VM
             }
         }
 
-        public Owner CurrentOwner
+        public Owner? CurrentOwner
         {
             get => currentOwner;
             set
@@ -45,21 +46,23 @@ namespace GarbageAndPeople.VM
                     ChangeOwnersThingsList(value.Id);
                     Signal();
                 }
+                RedactOwner.ChangeCanExecute();
+                RemoveOwner.ChangeCanExecute();
             }
         }
-        public Thing SelectedThing
+        public Thing? SelectedThing
         {
             get => selectedThing;
             set
             {
                 selectedThing = value;
                 Signal();
-                RemoveThing.ChangeCanExecute();
-                RedactThing.ChangeCanExecute();
+                //RemoveThing.ChangeCanExecute();
+                //RedactThing.ChangeCanExecute();
             }
         }
 
-        public List<Thing> OwnersThings
+        public IReadOnlyCollection<Thing> OwnersThings
         {
             get => ownersThings;
             set
@@ -82,35 +85,43 @@ namespace GarbageAndPeople.VM
             CreateThing = new Command(async () =>
             {
                 await page.Navigation.PushAsync(new EditThing(new Thing(), db));
-                Things = await db.GetThingsAsync();
             }, () => true);
             CreateOwner = new Command(async () =>
             {
                 await page.Navigation.PushAsync(new EditOwner(new Owner(), db));
-                Owners = await db.VerniMneSpisokOwner();
             }, () => true);
 
             RemoveThing = new Command<Thing>(async (thing) =>
             {
-                await db.RemoveThing(SelectedThing);
+                await db.RemoveThing(thing);
                 Things = await db.GetThingsAsync();
             }, (thing) => thing != null);
+            RemoveOwner = new Command<Owner>(async (owner) => 
+            {
+                await db.RemoveOwner(owner, page);
+                Owners = await db.VerniMneSpisokOwner();
+                CurrentOwner = Owners.FirstOrDefault();
+            }, (owner) => owner != null);
 
             RedactThing = new Command<Thing>(async (thing) =>
             {
-                //await page.Navigation.PushAsync(new EditThing(thing, db));
                 OpenEditThing(thing);
-                //Things = await db.GetThingsAsync();
             }, (thing) => thing != null);
+            RedactOwner = new Command<Owner>(async (owner) => 
+            {
+                await page.Navigation.PushAsync(new EditOwner(owner, db));
+            }, (owner) => owner != null);
 
 
             LoadLists();
         }
 
-        private async void LoadLists()
+        public async void LoadLists()
         {            
             Owners = await db.VerniMneSpisokOwner();
             Things = await db.GetThingsAsync();
+            if (CurrentOwner != null)
+                ChangeOwnersThingsList(CurrentOwner.Id);
         }
         private async void OpenEditThing(Thing thing)
         {

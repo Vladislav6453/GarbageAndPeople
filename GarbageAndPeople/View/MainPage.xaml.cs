@@ -10,5 +10,10 @@ namespace GarbageAndPeople
             InitializeComponent();
             ((MainPageVM)BindingContext).Set(this);
         }
+
+        protected override void OnAppearing()
+        {
+            ((MainPageVM)BindingContext).LoadLists();
+        }
     }
 }

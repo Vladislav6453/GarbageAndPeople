@@ -16,7 +16,7 @@
                 <CarouselView.ItemTemplate>
                     <DataTemplate>
                         <Border>
-                            <VerticalStackLayout>
+                            <VerticalStackLayout >
                                 <VerticalStackLayout.Resources>
                                     <Style TargetType="Label">
                                         <Setter Property="Margin" Value="5"/>
@@ -26,11 +26,20 @@
                                 <Label Text="{Binding LastName}"/>
                                 <Label Text="{Binding PhoneNumber}"/>
                                 <Label Text="{Binding Email}"/>
+                                <!--<HorizontalStackLayout HorizontalOptions="Center">
+                                    <Button Text="Редактировать" Command="{Binding RedactOwner, Source={StaticResource vm}}" CommandParameter="{Binding .}" Margin="3" />
+                                    <Button Text="Удалить" Command="{Binding RemoveOwner, Source={StaticResource vm}}" CommandParameter="{Binding .}" Margin="3"/>
+                                </HorizontalStackLayout>-->
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CarouselView.ItemTemplate>
             </CarouselView>
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Button Text="Редактировать" Command="{Binding RedactOwner, Source={StaticResource vm}}" CommandParameter="{Binding CurrentOwner}" Margin="3" />
+                <Button Text="Удалить" Command="{Binding RemoveOwner, Source={StaticResource vm}}" CommandParameter="{Binding CurrentOwner}" Margin="3"/>
+            </HorizontalStackLayout>
+            
             <IndicatorView x:Name="indicator" HorizontalOptions="Center"/>
 
             <ListView ItemsSource="{Binding OwnersThings}" SelectedItem="{Binding SelectedThing}">

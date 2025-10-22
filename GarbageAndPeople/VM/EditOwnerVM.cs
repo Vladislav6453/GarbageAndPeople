@@ -64,7 +64,7 @@ namespace GarbageAndPeople.VM
                 Owner.Email = Owner.Email.Trim();
                 Owner.PhoneNumber = Phone.Trim();
 
-                await db.ChangeOwner(Owner);
+                await db.AddOwner(Owner);
                 await page.Navigation.PopAsync();
             }, () => !string.IsNullOrEmpty(FName.Trim()) && 
             !string.IsNullOrEmpty(LName.Trim()) &&
@@ -74,6 +74,9 @@ namespace GarbageAndPeople.VM
         public void Set(Owner owner, Database db, ContentPage page)
         {
             Owner = owner;
+            FName = owner.FirstName;
+            LName = owner.LastName;
+            Phone = owner.PhoneNumber;
             this.db = db;
             this.page = page;
         }

@@ -23,7 +23,7 @@ namespace GarbageAndPeople.Models.DB
                     incrementOwner = owners.MaxBy(x => x.Id).Id;
                 }
             }
-            catch
+            catch (Exception e)
             {
                 owners = new();
             }
@@ -55,7 +55,7 @@ namespace GarbageAndPeople.Models.DB
             //AddOwner(new Owner() { FirstName = "vbnmvbn", LastName = "xcbv", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
 
         }
-        public async Task<List<Owner>> VerniMneSpisokOwner()
+        public async Task<IReadOnlyList<Owner>> VerniMneSpisokOwner()
         {
             await Task.Delay(300);
             return owners;
@@ -64,7 +64,7 @@ namespace GarbageAndPeople.Models.DB
         {
             try
             {
-                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "owners.json"), FileMode.OpenOrCreate))
+                using (var fs = new FileStream(Path.Combine(FileSystem.Current.AppDataDirectory, "owners.json"), FileMode.Create))
                     await JsonSerializer.SerializeAsync(fs, owners);
             }
             catch {
@@ -72,12 +72,12 @@ namespace GarbageAndPeople.Models.DB
             }
             return true;
         }
-        public async Task<List<Thing>> GetThingsAsync()
+        public async Task<IReadOnlyList<Thing>> GetThingsAsync()
         {
             await Task.Delay(300);
             return things;
         }
-        public async Task<List<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
+        public async Task<IReadOnlyList<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
             => (await GetThingsAsync()).Where(t => t.OwnerId == ownerId).ToList();
         public async Task<bool> SaveThingsAsync()
         {
@@ -92,15 +92,32 @@ namespace GarbageAndPeople.Models.DB
             }
             return true;
         }
-        public async Task<Owner> GetOwnerAsync(int id)
+        public async Task<Owner?> GetOwnerAsync(int id)
         {
-            return (await VerniMneSpisokOwner()).FirstOrDefault(owner => owner.Id == id);
+            var owner = (await VerniMneSpisokOwner()).FirstOrDefault(owner => owner.Id == id);
+            return owner == null ? null : new Owner
+                {
+                    Id = owner.Id,
+                    FirstName = owner.FirstName,
+                    LastName = owner.LastName,
+                    Email = owner.Email,
+                    PhoneNumber = owner.PhoneNumber,
+                    Things = owner.Things
+                };
         }
-        public async Task<Thing> GetThingAsync(int id)
+        public async Task<Thing?> GetThingAsync(int id)
         {
-            return (await GetThingsAsync()).FirstOrDefault(thing => thing.Id == id);
+            var thing = (await GetThingsAsync()).FirstOrDefault(thing => thing.Id == id);
+            return thing == null ? null : new Thing 
+            {
+                Id = thing.Id,
+                Description = thing.Description,
+                Owner = thing.Owner,
+                OwnerId = thing.OwnerId,
+                Title = thing.Title,
+            };
         }
-        public async Task ChangeOwner(Owner owner)
+        public async Task AddOwner(Owner owner)
         {
             if (owner.Id == 0)
             {
@@ -135,12 +152,18 @@ namespace GarbageAndPeople.Models.DB
         }
         public async Task RemoveThing(Thing thing)
         {
-            things.Remove(thing);
+            things.Remove(things.FirstOrDefault(t => t.Id == thing.Id));
             await SaveThingsAsync();
         }
-        public async Task RemoveOwner(Owner owner)
+        public async Task RemoveOwner(Owner owner, ContentPage page)
         {
-            owners.Remove(owner);
+            var own = owners.FirstOrDefault(o => o.Id == owner.Id);
+            if (own?.Things.Count > 0)
+            {
+                page?.DisplayAlert("Ошибка","Нельзя удалить хозяина, пока у него есть вещи.","ОК");
+                return;
+            }
+            owners.Remove(own);
             await SaveOwnersAsync();
         }
     }
