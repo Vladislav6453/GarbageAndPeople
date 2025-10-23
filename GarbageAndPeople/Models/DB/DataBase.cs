@@ -9,6 +9,8 @@ namespace GarbageAndPeople.Models.DB
         public Database() 
         {
             StartDb();
+            //owners.Add(new Owner { Id = 0, FirstName = "Бесхозные вещи"});
+            //SaveOwnersAsync();
         }
         private List<Owner> owners = new();
         private List<Thing> things = new();
@@ -55,10 +57,10 @@ namespace GarbageAndPeople.Models.DB
             //AddOwner(new Owner() { FirstName = "vbnmvbn", LastName = "xcbv", Email = "asdasd@gmail.com", PhoneNumber = "+12345678901" });
 
         }
-        public async Task<IReadOnlyList<Owner>> VerniMneSpisokOwner()
+        public async Task<List<Owner>> VerniMneSpisokOwner()
         {
             await Task.Delay(300);
-            return owners;
+            return owners.ToList();
         }
         public async Task<bool> SaveOwnersAsync()
         {
@@ -72,12 +74,12 @@ namespace GarbageAndPeople.Models.DB
             }
             return true;
         }
-        public async Task<IReadOnlyList<Thing>> GetThingsAsync()
+        public async Task<List<Thing>> GetThingsAsync()
         {
             await Task.Delay(300);
-            return things;
+            return things.ToList();
         }
-        public async Task<IReadOnlyList<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
+        public async Task<List<Thing>> GetThingsByOwnerIdAsync(int ownerId) 
             => (await GetThingsAsync()).Where(t => t.OwnerId == ownerId).ToList();
         public async Task<bool> SaveThingsAsync()
         {

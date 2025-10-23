@@ -10,13 +10,13 @@ namespace GarbageAndPeople.VM
     {
         private Database db = new();
         private Owner? currentOwner;
-        private IReadOnlyCollection<Owner> owners;
-        private IReadOnlyCollection<Thing> things;
-        private IReadOnlyCollection<Thing> ownersThings;
+        private ObservableCollection<Owner> owners;
+        private List<Thing> things;
+        private List<Thing> ownersThings;
         private ContentPage page;
         private Thing? selectedThing;
 
-        public IReadOnlyCollection<Owner> Owners
+        public ObservableCollection<Owner> Owners
         {
             get => owners;
             set
@@ -25,7 +25,7 @@ namespace GarbageAndPeople.VM
                 Signal();
             }
         }
-        public IReadOnlyCollection<Thing> Things
+        public List<Thing> Things
         {
             get => things;
             set
@@ -41,11 +41,9 @@ namespace GarbageAndPeople.VM
             set
             {
                 currentOwner = value;
-                if (value != null && value.Id != 0)
-                {
+                if (value != null)
                     ChangeOwnersThingsList(value.Id);
-                    Signal();
-                }
+                Signal();
                 RedactOwner.ChangeCanExecute();
                 RemoveOwner.ChangeCanExecute();
             }
@@ -62,7 +60,7 @@ namespace GarbageAndPeople.VM
             }
         }
 
-        public IReadOnlyCollection<Thing> OwnersThings
+        public List<Thing> OwnersThings
         {
             get => ownersThings;
             set
@@ -95,13 +93,16 @@ namespace GarbageAndPeople.VM
             {
                 await db.RemoveThing(thing);
                 Things = await db.GetThingsAsync();
+                if (CurrentOwner != null)
+                    ChangeOwnersThingsList(CurrentOwner.Id);
             }, (thing) => thing != null);
             RemoveOwner = new Command<Owner>(async (owner) => 
             {
                 await db.RemoveOwner(owner, page);
-                Owners = await db.VerniMneSpisokOwner();
+                Owners = [..await db.VerniMneSpisokOwner()];
                 CurrentOwner = Owners.FirstOrDefault();
-            }, (owner) => owner != null);
+            }, 
+            (owner) => owner != null && owner.Id != 0);
 
             RedactThing = new Command<Thing>(async (thing) =>
             {
@@ -110,15 +111,13 @@ namespace GarbageAndPeople.VM
             RedactOwner = new Command<Owner>(async (owner) => 
             {
                 await page.Navigation.PushAsync(new EditOwner(owner, db));
-            }, (owner) => owner != null);
-
-
-            LoadLists();
+            }, (owner) => owner != null && owner.Id != 0);
+            //LoadLists();
         }
 
         public async void LoadLists()
-        {            
-            Owners = await db.VerniMneSpisokOwner();
+        {
+            Owners = [.. await db.VerniMneSpisokOwner()];
             Things = await db.GetThingsAsync();
             if (CurrentOwner != null)
                 ChangeOwnersThingsList(CurrentOwner.Id);
@@ -128,8 +127,14 @@ namespace GarbageAndPeople.VM
             await page.Navigation.PushAsync(new EditThing(thing, db));
         }
 
-        private async void ChangeOwnersThingsList(int ownerId) =>
-            OwnersThings = await db.GetThingsByOwnerIdAsync(ownerId);
+        private async void ChangeOwnersThingsList(int ownerId)
+        {
+            if (ownerId == 0) 
+                OwnersThings = (await db.GetThingsAsync()).Where(t => t.OwnerId == null).ToList();
+            else if (ownerId > 0)
+                OwnersThings = await db.GetThingsByOwnerIdAsync(ownerId);
+        }
+            
         public void Set(ContentPage page)
         {
             this.page = page;

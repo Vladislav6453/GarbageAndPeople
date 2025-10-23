@@ -26,10 +26,6 @@
                                 <Label Text="{Binding LastName}"/>
                                 <Label Text="{Binding PhoneNumber}"/>
                                 <Label Text="{Binding Email}"/>
-                                <!--<HorizontalStackLayout HorizontalOptions="Center">
-                                    <Button Text="Редактировать" Command="{Binding RedactOwner, Source={StaticResource vm}}" CommandParameter="{Binding .}" Margin="3" />
-                                    <Button Text="Удалить" Command="{Binding RemoveOwner, Source={StaticResource vm}}" CommandParameter="{Binding .}" Margin="3"/>
-                                </HorizontalStackLayout>-->
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -43,9 +39,6 @@
             <IndicatorView x:Name="indicator" HorizontalOptions="Center"/>
 
             <ListView ItemsSource="{Binding OwnersThings}" SelectedItem="{Binding SelectedThing}">
-                <!--<ListView.Resources>
-                    <Style TargetType=""
-                </ListView.Resources>-->
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
